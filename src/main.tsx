@@ -3,9 +3,16 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import 'virtual:windi.css'
+import { MantineProvider, Text } from '@mantine/core';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <MantineProvider withGlobalStyles withNormalizeCSS theme={
+    {
+      colorScheme:'dark'
+    }
+    }>
+      <App />
+    </MantineProvider>
   </React.StrictMode>
 )
