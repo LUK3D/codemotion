@@ -39,16 +39,16 @@ function App() {
           <div id='subject' className="subject w-40 h-40 shadow-2xl bg-white rounded-lg ">
           </div>
 
-          <div className="timeline absolute bottom-0 right-0 w-full flex flex-col pb-20 px-30">
+          <div className="timeline absolute bottom-0 right-0 w-full flex flex-col pb-20 px-30 z-20">
             <div className="flex mb-4 justify-center">
-            <ActionIcon variant='filled' size={40}>
+            <ActionIcon onClick={()=>addKeyFram()} variant='filled' size={40}>
               <div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
               </svg>
               </div>
             </ActionIcon>
-            <ActionIcon variant='filled' size={40}>
+            <ActionIcon onClick={()=>play()} variant='filled' size={40}>
               <div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
@@ -85,7 +85,6 @@ function App() {
         className='mb-2'
         />
 
-
         <Popover width={300} position="bottom" withArrow shadow="md">
           <Popover.Target>
            <div className='w-full flex mt-2'>
@@ -107,13 +106,6 @@ function App() {
 
           </Popover.Dropdown>
         </Popover>
-
-      
-
-        <div className='w-full flex justify-between mt-4'>
-          <button onClick={()=>addKeyFram()}  className='border px-4 py-2 rounded-md'>Add KeyFrame</button>
-          <button onClick={()=>play()} className='border px-4 py-2 rounded-md'>Play</button>
-        </div>
 
       </div>
       
