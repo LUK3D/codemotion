@@ -6,12 +6,7 @@ export class CodeMotion {
 
      frameTemplate = `
         @keyframes myAnim {
-            from {
-                {from}
-            }
-            to {
-                {to}
-            }
+            {frames}
         }
      `;
  
@@ -22,7 +17,8 @@ export class CodeMotion {
     rotate(degree:number){
         if(this.el){
             this.el.style.rotate = `${degree}deg`; 
-            this.addAnimatedProp('rotate');         
+            this.addAnimatedProp('rotate'); 
+            console.log('rotating',this.animatedProps);        
         }
 
     }
@@ -31,12 +27,16 @@ export class CodeMotion {
         if(this.el){
             this.el.style.scale = `${size*0.05}`; 
             this.addAnimatedProp('scale');   
+            console.log('scalling',this.animatedProps);        
+
         }
     }
     color(hexColor:string){
         if(this.el){
             this.el.style.background = hexColor; 
             this.addAnimatedProp('background');   
+            console.log('backgrounding',this.animatedProps);        
+
         }
     }
 
@@ -48,7 +48,7 @@ export class CodeMotion {
 
  
 
-    setFrame(){
+    setFrame(timelinePosition:number){
         let keyframe:Array<string> = [];
 
         this.animatedProps.forEach(prop => {
@@ -56,8 +56,11 @@ export class CodeMotion {
             keyframe.push(`${prop}:${this.el?.style[prop]}`);
         });
 
+        console.log(this.animatedProps);
+        console.log(keyframe);
+
         if(keyframe.length>0){
-            this.frames.push(keyframe.join('; ')+';');
+            this.frames.push(`${timelinePosition}% { ${keyframe.join('; ')+';'} }` );
         }
 
         
@@ -67,7 +70,7 @@ export class CodeMotion {
 
     play(){
         this.el!.classList.add('myAnimation');
-        let anim = this.frameTemplate.split('{from}').join(this.frames[0]).split('{to}').join(this.frames[1]);
+        let anim = this.frameTemplate.split('{frames}').join(this.frames.join(' '));
         document.body.innerHTML +=`<style>${anim} .myAnimation{ animation: myAnim 2s alternate-reverse 0s infinite; } </style>`;
     }
 

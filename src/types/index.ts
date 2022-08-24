@@ -1,0 +1,1 @@
+export interface ITimeLineSteps{ value: number, label: string }

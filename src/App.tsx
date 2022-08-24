@@ -1,15 +1,25 @@
 import { ActionIcon, Button, ColorPicker, NumberInput, Popover, Slider } from '@mantine/core';
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { CodeMotion } from './codemotion'
-
+import { ITimeLineSteps } from './types';
+let motion:CodeMotion;
 function App() {
 
-  let motion:CodeMotion;
+  const [steps,setSteps] = useState<Array<ITimeLineSteps>>([
+    // { value: 0, label: '0%' },
+    // { value: 100, label: '100%' },
+  ]);
+
+  const [timelinePos,setTimelinePos] = useState<number>();
+
+
+
 
   useEffect(()=>{
+    if(!motion)
      motion = new CodeMotion('#subject');
-  },);
+  });
 
   function rotateElement(value?:number){
     if(value)
@@ -28,7 +38,8 @@ function App() {
   }
 
   function addKeyFram(){
-    motion.setFrame();
+    motion.setFrame(timelinePos??0);
+    setSteps([...steps,{label:`${timelinePos}%`,value:timelinePos!}]);
   }
 
 
@@ -59,10 +70,8 @@ function App() {
             </div>
           <Slider
           color={'yellow'}
-            marks={[
-              { value: 0, label: '0%' },
-              { value: 100, label: '100%' },
-            ]}
+            marks={steps}
+            onChange={(val)=>{setTimelinePos(val)}}
           />
           </div>
       </div>
@@ -94,8 +103,8 @@ function App() {
               </div>
               <button className='w-9 h-9 rounded-md bg-white flex flex-col text-black'>
               <div className='w-full h-full'>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className='w-full h-full'>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className='w-full h-full'>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
                 </svg>
               </div>
             </button>
