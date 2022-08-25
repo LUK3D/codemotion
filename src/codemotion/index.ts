@@ -1,3 +1,5 @@
+import { IVector2 } from "../types";
+
 export class CodeMotion {
      el:HTMLElement|null;
 
@@ -14,11 +16,17 @@ export class CodeMotion {
         this.el = document.querySelector(selector);
     }      
 
+    translate(pos:IVector2){
+        if(this.el){
+            this.el.style.transform = `translate(${pos.x}px,${pos.y}px)`; 
+            this.addAnimatedProp('transform'); 
+        }
+
+    }
     rotate(degree:number){
         if(this.el){
             this.el.style.rotate = `${degree}deg`; 
             this.addAnimatedProp('rotate'); 
-            console.log('rotating',this.animatedProps);        
         }
 
     }
@@ -27,16 +35,12 @@ export class CodeMotion {
         if(this.el){
             this.el.style.scale = `${size*0.05}`; 
             this.addAnimatedProp('scale');   
-            console.log('scalling',this.animatedProps);        
-
         }
     }
     color(hexColor:string){
         if(this.el){
             this.el.style.background = hexColor; 
             this.addAnimatedProp('background');   
-            console.log('backgrounding',this.animatedProps);        
-
         }
     }
 
@@ -67,15 +71,24 @@ export class CodeMotion {
        
     }
 
+    getAnimationStyle(){
+        let styles = document.getElementsByTagName('style');
+        return styles[styles.length-1]!;
+    }
+
 
     play(){
         this.el!.classList.add('myAnimation');
         let anim = this.frameTemplate.split('{frames}').join(this.frames.join(' '));
-        document.body.innerHTML +=`<style>${anim} .myAnimation{ animation: myAnim 2s alternate-reverse 0s infinite; } </style>`;
+        document.getElementById('myStyles')!.innerHTML +=`<style>${anim} .myAnimation{ animation: myAnim 2s alternate-reverse 0s infinite; } </style>`;
+        let styles = document.getElementsByTagName('style');
+        console.log(styles[styles.length-1]!.innerHTML)
+        
+        // console.log(document.styleSheets.item(1));
     }
 
     stop(){
-
+        this.getAnimationStyle().remove();
     }
 
     

@@ -2,7 +2,7 @@ import { ActionIcon, Button, ColorPicker, NumberInput, Popover, Slider } from '@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { CodeMotion } from './codemotion'
-import { ITimeLineSteps } from './types';
+import { ITimeLineSteps, IVector2 } from './types';
 let motion:CodeMotion;
 function App() {
 
@@ -13,13 +13,27 @@ function App() {
 
   const [timelinePos,setTimelinePos] = useState<number>();
 
+  const [isplaying,setIsPlaying] = useState<boolean>(false);
+  const [position,setPosition] = useState<IVector2>({x:0,y:0});
 
 
 
   useEffect(()=>{
     if(!motion)
      motion = new CodeMotion('#subject');
-  });
+  },[]);
+
+  function moveElementX(value?:number){
+    if(value)
+    setPosition({...position,x:value})
+    motion.translate(position);
+  }
+  function moveElementY(value?:number){
+    if(value)
+    setPosition({...position,y:value})
+    motion.translate(position);
+  }
+
 
   function rotateElement(value?:number){
     if(value)
@@ -34,7 +48,13 @@ function App() {
   }
 
   function play(){
+    setIsPlaying(!isplaying);
+    console.log(isplaying)
     motion.play();
+  }
+  function stop(){
+    setIsPlaying(!isplaying);
+    motion.stop();
   }
 
   function addKeyFram(){
@@ -47,7 +67,7 @@ function App() {
     <div className="w-screen h-screen bg-dark-800  flex">
 
       <div className="scene w-fulll h-full flex justify-center items-center w-full overflow-hidden relative">
-          <div id='subject' className="subject w-40 h-40 shadow-2xl bg-white rounded-lg ">
+          <div id='subject' className="subject w-40 h-40 shadow-2xl bg-white rounded-lg absolute ">
           </div>
 
           <div className="timeline absolute bottom-0 right-0 w-full flex flex-col pb-20 px-30 z-20">
@@ -59,10 +79,18 @@ function App() {
               </svg>
               </div>
             </ActionIcon>
-            <ActionIcon onClick={()=>play()} variant='filled' size={40}>
+            <ActionIcon className={isplaying?'hidden':'flex'} onClick={()=>play()} variant='filled' size={40}>
               <div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+              </svg>
+
+              </div>
+            </ActionIcon>
+            <ActionIcon color={'yellow'} className={isplaying?'flex':'hidden'} onClick={()=>stop()} variant='filled' size={40}>
+              <div className='p-1'>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z" />
               </svg>
 
               </div>
@@ -78,6 +106,27 @@ function App() {
 
       <div className="toolbox w-[500px] h-full bg-dark-500  rounded-lg shadow-2xl p-5 flex flex-col text-gray-200" >
         <p className="text-2xl font-bold w-full  pb-4 mb-4">Properties</p>
+
+
+        <div className='flex flex-col my-4  pt-2 '>
+          <div className='w-full flex flex-col text-xs '>
+                <p className='text-sm'>Position</p>
+                <p className='opacity-60'>Move the element on the Horizontal and Vertical Axis</p>
+          </div>
+          <div className='flex'>
+          <NumberInput
+            label="Horizontal"
+            defaultValue={0}
+            onChange={(e)=>moveElementX(e)}
+          />
+          <NumberInput
+            label="Vertical"
+            defaultValue={0}
+            onChange={(e)=>moveElementY(e)}
+          />
+          </div>
+        
+        </div>
 
         <NumberInput
         label="Rotation"
@@ -115,6 +164,9 @@ function App() {
 
           </Popover.Dropdown>
         </Popover>
+
+
+        
 
       </div>
       
