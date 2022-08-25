@@ -28,7 +28,6 @@ export class CodeMotion {
             this.el.style.rotate = `${degree}deg`; 
             this.addAnimatedProp('rotate'); 
         }
-
     }
 
     scale(size:number){
@@ -50,6 +49,12 @@ export class CodeMotion {
         }  
     }
 
+
+    playbackPreview(timelinePosition:number){
+        document.documentElement.style.setProperty('--startAt', '-'+(100/timelinePosition)+'s');
+        
+    }
+
  
 
     setFrame(timelinePosition:number){
@@ -65,10 +70,20 @@ export class CodeMotion {
 
         if(keyframe.length>0){
             this.frames.push(`${timelinePosition}% { ${keyframe.join('; ')+';'} }` );
+            this.appendAnimationStyle();
         }
-
         
-       
+    }
+
+    appendAnimationStyle(){
+        this.getAnimationStyle().remove();
+        this.el!.classList.add('myAnimation');
+        let anim = this.frameTemplate.split('{frames}').join(this.frames.join(' '));
+        document.getElementById('myStyles')!.innerHTML +=`<style>${anim} .myAnimation{ 
+            animation: myAnim 2s linear 0s infinite; 
+            animation-play-state: paused;
+            animation-delay: var(--startAt);
+        } </style>`;
     }
 
     getAnimationStyle(){
@@ -78,11 +93,13 @@ export class CodeMotion {
 
 
     play(){
+      
         this.el!.classList.add('myAnimation');
         let anim = this.frameTemplate.split('{frames}').join(this.frames.join(' '));
-        document.getElementById('myStyles')!.innerHTML +=`<style>${anim} .myAnimation{ animation: myAnim 2s alternate-reverse 0s infinite; } </style>`;
-        let styles = document.getElementsByTagName('style');
-        console.log(styles[styles.length-1]!.innerHTML)
+        document.getElementById('myStyles')!.innerHTML +=`<style>${anim} .myAnimation{ 
+            animation: myAnim 2s linear 0s infinite; 
+        } </style>`;
+   
         
         // console.log(document.styleSheets.item(1));
     }

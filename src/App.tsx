@@ -61,6 +61,10 @@ function App() {
     motion.setFrame(timelinePos??0);
     setSteps([...steps,{label:`${timelinePos}%`,value:timelinePos!}]);
   }
+  function playBackPreview(val:number){
+    setTimelinePos(val)
+    motion.playbackPreview(val??0);
+  }
 
 
   return (
@@ -99,7 +103,7 @@ function App() {
           <Slider
           color={'yellow'}
             marks={steps}
-            onChange={(val)=>{setTimelinePos(val)}}
+            onChange={(val)=>{playBackPreview(val)}}
           />
           </div>
       </div>
@@ -123,6 +127,9 @@ function App() {
             label="Vertical"
             defaultValue={0}
             onChange={(e)=>moveElementY(e)}
+            onChangeCapture={(e)=>moveElementY(
+              //@ts-ignore
+              e.target.value)}
           />
           </div>
         
