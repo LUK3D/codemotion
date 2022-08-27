@@ -1,23 +1,15 @@
 import { ActionIcon, Button, ColorPicker, NumberInput, Popover, Slider } from '@mantine/core';
-import { useEffect, useState } from 'react'
+import { useEffect} from 'react'
 import './App.css'
-import { CodeMotion } from './codemotion'
-import { ITimeLineSteps, IVector2 } from './types';
+import { CodeMotion } from '../codemotion'
+import { cmStates } from '../codemotion/codemotionStates';
 let motion:CodeMotion;
+
+
 function App() {
 
-  const [steps,setSteps] = useState<Array<ITimeLineSteps>>([
-    // { value: 0, label: '0%' },
-    // { value: 100, label: '100%' },
-  ]);
-
-  const [timelinePos,setTimelinePos] = useState<number>();
-
-  const [isplaying,setIsPlaying] = useState<boolean>(false);
-  const [position,setPosition] = useState<IVector2>({x:0,y:0});
-
-
-
+  const codeMState = cmStates();
+  
   useEffect(()=>{
     if(!motion)
      motion = new CodeMotion('#subject');
@@ -25,15 +17,15 @@ function App() {
 
   function moveElementX(value?:number){
     if(value)
-    setPosition({...position,x:value})
-    motion.translate(position);
-  }
-  function moveElementY(value?:number){
-    if(value)
-    setPosition({...position,y:value})
-    motion.translate(position);
+    codeMState.setPosition({...codeMState.position,x:value})
+    motion.translate(codeMState.position);
   }
 
+  function moveElementY(value?:number){
+    if(value)
+    codeMState.setPosition({...codeMState.position,y:value})
+    motion.translate(codeMState.position);
+  }
 
   function rotateElement(value?:number){
     if(value)
@@ -48,21 +40,20 @@ function App() {
   }
 
   function play(){
-    setIsPlaying(!isplaying);
-    console.log(isplaying)
+    codeMState.setIsPlaying(!codeMState.isPlaying);
     motion.play();
   }
   function stop(){
-    setIsPlaying(!isplaying);
+    codeMState.setIsPlaying(!codeMState.isPlaying);
     motion.stop();
   }
 
   function addKeyFram(){
-    motion.setFrame(timelinePos??0);
-    setSteps([...steps,{label:`${timelinePos}%`,value:timelinePos!}]);
+    motion.setFrame(codeMState.timelinePosition??0);
+    codeMState.setTimelineSteps([...codeMState.timelineSteps,{label:`${codeMState.timelinePosition}%`,value:codeMState.timelinePosition!}]);
   }
   function playBackPreview(val:number){
-    setTimelinePos(val)
+    codeMState.setTimelinePosition(val)
     motion.playbackPreview(val??0);
   }
 
@@ -83,7 +74,7 @@ function App() {
               </svg>
               </div>
             </ActionIcon>
-            <ActionIcon className={isplaying?'hidden':'flex'} onClick={()=>play()} variant='filled' size={40}>
+            <ActionIcon className={codeMState.isPlaying?'hidden':'flex'} onClick={()=>play()} variant='filled' size={40}>
               <div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
@@ -91,7 +82,7 @@ function App() {
 
               </div>
             </ActionIcon>
-            <ActionIcon color={'yellow'} className={isplaying?'flex':'hidden'} onClick={()=>stop()} variant='filled' size={40}>
+            <ActionIcon color={'yellow'} className={codeMState.isPlaying?'flex':'hidden'} onClick={()=>stop()} variant='filled' size={40}>
               <div className='p-1'>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z" />
@@ -102,7 +93,7 @@ function App() {
             </div>
           <Slider
           color={'yellow'}
-            marks={steps}
+            marks={codeMState.timelineSteps}
             onChange={(val)=>{playBackPreview(val)}}
           />
           </div>
@@ -110,8 +101,6 @@ function App() {
 
       <div className="toolbox w-[500px] h-full bg-dark-500  rounded-lg shadow-2xl p-5 flex flex-col text-gray-200" >
         <p className="text-2xl font-bold w-full  pb-4 mb-4">Properties</p>
-
-
         <div className='flex flex-col my-4  pt-2 '>
           <div className='w-full flex flex-col text-xs '>
                 <p className='text-sm'>Position</p>
@@ -168,15 +157,9 @@ function App() {
           </Popover.Target>
           <Popover.Dropdown>
           <ColorPicker className='w-full' onChange={(e)=>changeBackground(e)} format="hex" swatches={['#25262b', '#868e96', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#4c6ef5', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#fd7e14']} />
-
           </Popover.Dropdown>
         </Popover>
-
-
-        
-
       </div>
-      
     </div>
   )
 }
