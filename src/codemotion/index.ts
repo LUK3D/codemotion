@@ -1,16 +1,21 @@
 import { IVector2 } from "../types";
 
+import {css_beautify} from 'js-beautify';
+
 export class CodeMotion {
      el:HTMLElement|null;
 
      frames:Array<string> = [];
      animatedProps:Array<string> = [];
 
-     frameTemplate = `
-        @keyframes myAnim {
-            {frames}
-        }
-     `;
+     frameTemplate =
+`
+@keyframes myAnim {
+    {frames}
+}
+`;
+
+    sourceAnimation = '';
  
     constructor(selector: string){
         this.el = document.querySelector(selector);
@@ -18,8 +23,12 @@ export class CodeMotion {
 
     translate(pos:IVector2){
         if(this.el){
-            this.el.style.transform = `translate(${pos.x}px,${pos.y}px)`; 
-            this.addAnimatedProp('transform'); 
+            
+            // this.el.style.transform = `translate(${pos.x}px,${pos.y}px)`; 
+            this.el.style.top = `${pos.y}px`; 
+            this.el.style.left = `${pos.x}px`; 
+            this.addAnimatedProp('top'); 
+            this.addAnimatedProp('left'); 
         }
 
     }
@@ -44,8 +53,12 @@ export class CodeMotion {
     }
 
     addAnimatedProp(prop:string){
+
+       
         if(!this.animatedProps.includes(prop)){
+            
             this.animatedProps.push(prop);
+            this.resetStartAt();
         }  
     }
 
@@ -53,6 +66,10 @@ export class CodeMotion {
     playbackPreview(timelinePosition:number){
         document.documentElement.style.setProperty('--startAt', '-'+(100/timelinePosition)+'s');
         
+    }
+
+    resetStartAt(){
+        document.documentElement.style.removeProperty('--startAt');
     }
 
  
@@ -92,13 +109,35 @@ export class CodeMotion {
     }
 
 
-    play(){
-      
+    formatCode(){
         this.el!.classList.add('myAnimation');
         let anim = this.frameTemplate.split('{frames}').join(this.frames.join(' '));
-        document.getElementById('myStyles')!.innerHTML +=`<style>${anim} .myAnimation{ 
-            animation: myAnim 2s linear 0s infinite; 
-        } </style>`;
+this.sourceAnimation = `
+${
+css_beautify(
+`
+${anim} 
+.myAnimation{ 
+animation: myAnim 2s linear 0s infinite; 
+}
+`,{ indent_level: 2, space_around_combinator: true, space_around_selector_separator:true })
+}
+`;
+    }
+
+
+    play(){
+      
+       this.formatCode();
+
+    
+
+
+        document.getElementById('myStyles')!.innerHTML +='<style>' + this.sourceAnimation + '</style>';
+
+
+        this.el!.classList.add('myAnimation');
+
    
         
         // console.log(document.styleSheets.item(1));

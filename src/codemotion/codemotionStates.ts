@@ -10,6 +10,9 @@ const [color,setColor] = useState<String>('#ffffff');
 const [timelineSteps,setTimelineSteps] = useState<Array<ITimeLineSteps>>([]);
 const [timelinePosition,setTimelinePosition] = useState<number>();
 const [isPlaying,setIsPlaying] = useState<boolean>(false);
+const [IsMoving,setIsMoving] = useState<boolean>(false);
+const [showCode, setShowCode] = useState(false);
+const [code, setCode] = useState('');
 
 return  {
     position, setPosition,
@@ -18,7 +21,10 @@ return  {
     color,setColor,
     timelineSteps,setTimelineSteps,
     timelinePosition,setTimelinePosition,
-    isPlaying,setIsPlaying
+    isPlaying,setIsPlaying,
+    IsMoving,setIsMoving,
+    showCode, setShowCode,
+    code, setCode
 };
 }
 

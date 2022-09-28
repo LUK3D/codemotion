@@ -1,19 +1,17 @@
-import { ActionIcon, Button, ColorPicker, NumberInput, Popover, Slider } from '@mantine/core';
+import { ActionIcon, Button, Code, ColorPicker, Dialog, Drawer, Group, NumberInput, Popover, Slider, TextInput } from '@mantine/core';
 import { useEffect} from 'react'
 import './App.css'
 import { CodeMotion } from '../codemotion'
 import { cmStates } from '../codemotion/codemotionStates';
+import { Prism } from '@mantine/prism';
 let motion:CodeMotion;
 
 
 function App() {
 
   const codeMState = cmStates();
-  
-  useEffect(()=>{
-    if(!motion)
-     motion = new CodeMotion('#subject');
-  },[]);
+
+
 
   function moveElementX(value?:number){
     if(value)
@@ -26,6 +24,8 @@ function App() {
     codeMState.setPosition({...codeMState.position,y:value})
     motion.translate(codeMState.position);
   }
+
+
 
   function rotateElement(value?:number){
     if(value)
@@ -56,13 +56,76 @@ function App() {
     codeMState.setTimelinePosition(val)
     motion.playbackPreview(val??0);
   }
+  //@ts-ignore
+ 
+
+  useEffect(()=>{
+    if(!motion)
+     motion = new CodeMotion('#subject');
+     moveElementX(parseInt(motion.el!.style.left.replace('px','')));
+     moveElementY(parseInt(motion.el!.style.top.replace('px','')));
+     codeMState.setPosition({x:parseInt(motion.el!.style.left.replace('px','')), y:parseInt(motion.el!.style.top.replace('px',''))});
+
+     moveElementX(parseInt(motion.el!.style.left.replace('px','')));
+    moveElementY(parseInt(motion.el!.style.top.replace('px','')));
+
+
+  //@ts-ignore
+  document.ismoving = false;
+
+    document.addEventListener('pointerup', (e)=>{
+      console.log("Largou")
+    //@ts-ignore
+      document.ismoving = (false);
+    })
+    document.getElementById('subject')!.addEventListener('pointerdown', (e)=>{
+      console.log("Cliquei")
+      //@ts-ignore
+      document.ismoving = (true);
+      
+    })
+
+    document.addEventListener('pointermove', (e)=>{
+      
+      //@ts-ignore
+      if(document.ismoving){
+        //@ts-ignore
+      console.log(e.x, e.y);
+      //@ts-ignore
+      motion.el!.classList.remove('myAnimation');
+      codeMState.setPosition({y:e.y,x:e.x})
+      motion.el!.style.bottom = e.y + 'px';
+      motion.el!.style.left = e.x + 'px';
+      //@ts-ignore
+      motion.el!.style.right = null;
+      }
+      //@ts-ignore
+
+      console.log("Moving",document.ismoving);
+
+    })
+
+
+  },[]);
+
+
+
+  function exportCode(){
+    motion.formatCode();
+    codeMState.setCode(motion.sourceAnimation);
+  }
+ 
 
 
   return (
     <div className="w-screen h-screen bg-dark-800  flex">
+      
 
       <div className="scene w-fulll h-full flex justify-center items-center w-full overflow-hidden relative">
-          <div id='subject' className="subject w-40 h-40 shadow-2xl bg-white rounded-lg absolute ">
+          <div id='subject'  style={{
+            right:codeMState.position.x,
+            top:codeMState.position.y,
+          }} className="subject w-40 h-40 shadow-2xl bg-white rounded-lg absolute ">
           </div>
 
           <div className="timeline absolute bottom-0 right-0 w-full flex flex-col pb-20 px-30 z-20">
@@ -109,16 +172,14 @@ function App() {
           <div className='flex'>
           <NumberInput
             label="Horizontal"
-            defaultValue={0}
+            value={codeMState.position.x}
             onChange={(e)=>moveElementX(e)}
           />
           <NumberInput
             label="Vertical"
-            defaultValue={0}
+            value={codeMState.position.y}
             onChange={(e)=>moveElementY(e)}
-            onChangeCapture={(e)=>moveElementY(
-              //@ts-ignore
-              e.target.value)}
+            
           />
           </div>
         
@@ -159,7 +220,57 @@ function App() {
           <ColorPicker className='w-full' onChange={(e)=>changeBackground(e)} format="hex" swatches={['#25262b', '#868e96', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#4c6ef5', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#fd7e14']} />
           </Popover.Dropdown>
         </Popover>
+        
+     
       </div>
+
+
+      <ActionIcon onClick={()=>{
+        codeMState.setShowCode(true);
+        exportCode();
+      }} variant='filled' size={40} className="top-10 right-[500px] fixed">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
+
+              </div>
+            </ActionIcon>
+      
+
+
+      <Drawer
+        opened={codeMState.showCode}
+        onClose={() => codeMState.setShowCode(false)}
+        title="Animation COde"
+        padding="xl"
+        size="xl"
+      >
+
+        <div className="w-full h-full pb-20 ">
+          <Prism language="css" withLineNumbers={true} className='h-full w-full overflow-y-auto '>{codeMState.code }</Prism>
+        </div>
+        
+      </Drawer>
+
+{/* 
+      <Dialog
+        opened={codeMState.showCode}
+        withCloseButton
+        onClose={() => codeMState.setShowCode(false)}
+        size="lg"
+        radius="md"
+        position={{}}
+      >
+        <p>
+        Subscribe to email newsletter
+        </p>
+
+        <Group align="flex-end">
+          <TextInput placeholder="hello@gluesticker.com" style={{ flex: 1 }} />
+        </Group>
+      </Dialog> */}
+      
     </div>
   )
 }

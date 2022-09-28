@@ -12,10 +12,13 @@
     "@emotion/react": "^11.10.0",
     "@mantine/core": "^5.2.3",
     "@mantine/hooks": "^5.2.3",
+    "@mantine/prism": "^5.2.4",
+    "js-beautify": "^1.14.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/js-beautify": "^1.13.3",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.1",
